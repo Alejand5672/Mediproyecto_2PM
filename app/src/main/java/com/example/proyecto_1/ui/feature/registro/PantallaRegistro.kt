@@ -232,6 +232,28 @@ fun PantallaRegistro(
             shape = RoundedCornerShape(10.dp)
         )
 
+        // ✅ NUEVO: Botón para regresar al menú principal (solo si el perfil ya está completado)
+        if (sessionManager.isProfileCompleted()) {
+            Spacer(Modifier.height(8.dp))
+
+            OutlinedButton(
+                onClick = {
+                    onPerfilCompletado()
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = cs.primary
+                )
+            ) {
+                Text(
+                    "Regresar al menú principal",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+
         Spacer(Modifier.weight(1f))
 
         // Botón Guardar
@@ -260,16 +282,20 @@ fun PantallaRegistro(
                         )
                         AppDataManager.actualizarUsuario(nuevoUsuario)
 
+                        val mensaje = if (!sessionManager.isProfileCompleted()) {
+                            "✓ Perfil completado. ¡Bienvenido/a!"
+                        } else {
+                            "✓ Perfil actualizado correctamente"
+                        }
+
                         Toast.makeText(
                             context,
-                            "✓ Perfil guardado correctamente",
+                            mensaje,
                             Toast.LENGTH_LONG
                         ).show()
 
-                        // Si es la primera vez, navegar a Inicio
-                        if (!sessionManager.isProfileCompleted()) {
-                            onPerfilCompletado()
-                        }
+                        // Siempre navegar a Inicio después de guardar
+                        onPerfilCompletado()
                     }
                 },
                 shape = RoundedCornerShape(40.dp),
